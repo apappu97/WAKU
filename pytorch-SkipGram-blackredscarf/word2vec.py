@@ -42,7 +42,7 @@ class Word2Vec:
             batch_inputs = torch.tensor(batch_inputs, dtype=torch.long).to(self.device)
             batch_labels = torch.tensor(batch_labels, dtype=torch.long).to(self.device)
             batch_neg = torch.tensor(batch_neg, dtype=torch.long).to(self.device)
-
+            print('hello')
             loss = self.model(batch_inputs, batch_labels, batch_neg)
             self.model_optim.zero_grad()
             loss.backward()
