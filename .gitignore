@@ -1,6 +1,6 @@
 text8
-
-
+GoogleNews-vectors-negative300.*
+.DS_Store
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
