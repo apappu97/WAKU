@@ -10,8 +10,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 import matplotlib.pyplot as plt
+import pickle
 import copy
 import re
+from datetime import datetime
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Device used: ", device)
@@ -339,7 +341,7 @@ class Extrinsic_Sentiment_Analysis:
         self.ValData = SST.ValData
         self.TestData = SST.TestData
 
-    def train(self,epochs=25, learning_rate=0.001, batch_size=512, hidden_size=300, rnn_layers=2, mlp_layer_widths=100):
+    def train(self,epochs=100, learning_rate=0.001, batch_size=512, hidden_size=300, rnn_layers=2, mlp_layer_widths=100):
         """train LSTM model using AdamW optimiser with cross-entropy loss"""
         self.hidden_size = hidden_size
         self.rnn_layers = rnn_layers
@@ -349,33 +351,19 @@ class Extrinsic_Sentiment_Analysis:
                                                                                 epochs=epochs, learning_rate=learning_rate, batch_size=batch_size, rnn_layers=rnn_layers, 
                                                                                 mlp_layer_widths=mlp_layer_widths)
 
-    def test(self, print_accuracies=True):
+    def test(self, print_accuracies=True, save_test_acc=True, file_path=None):
         try:
             self.bestAccuracy = test_model(self.model, self.TestData, self.accuracy, self.valAccuracy, print_accuracies=True)
         except:
             raise ValueError('Model not trained')
+
+        with open('../data/scores/{}/{}.txt'.format(file_path,'sentiment_analysis_' + str(datetime.now())), 'w') as out:
+            out.write("Test accuracy on SST: {}".format(self.bestAccuracy["test set"]))
+
+        print("Test accuracy: {} saved to {}".format(self.bestAccuracy["test set"], str(fname)))
 
     def plot(self):
         try:
             plot_model(self.accuracy, self.valAccuracy, self.losses, self.valLosses)
         except:
             raise ValueError('Model note trained')
-
-##### EXAMPLE USAGE #######
-if 1==0:
-    downloadFile('https://s3.amazonaws.com/dl4j-distribution/GoogleNews-vectors-negative300.bin.gz',
-                'GoogleNews-vectors-negative300.bin.gz')
-
-    W2Vmodel = KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin.gz',
-                                                binary=True)
-    W2V_dict = {token: token_index for token_index, token in enumerate(W2Vmodel.index2word)} 
-    W2V_weights = W2Vmodel.vectors
-
-    print(W2V_weights.shape)
-
-    SST = SST()
-    Experiment = Extrinsic_Sentiment_Analysis(SST, W2V_dict, W2V_weights, True)
-    print(Experiment)
-    Experiment.train(epochs=50, learning_rate=0.001, batch_size=512, hidden_size=300, rnn_layers=2, mlp_layer_widths=100)
-    Experiment.test(print_accuracies=True)
-    SST.reset()
