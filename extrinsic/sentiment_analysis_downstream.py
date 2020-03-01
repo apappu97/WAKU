@@ -16,6 +16,14 @@ import re
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Device used: ", device)
 
+# read pickle file into dictionary
+def load_pickle(filepath):
+    # file path must end with .pickle
+    pickle_in = open(filepath,"rb")
+    emb_dict = pickle.load(pickle_in)
+    return emb_dict
+
+
 # helper function to download the data and pretrained embeddings
 def downloadFile(url,filepath) :
     if not path.exists(filepath) :
@@ -85,7 +93,6 @@ def reduce_preprocess_embedding(x_train, x_val, x_test, embedding_dict, embeddin
     weights = weights.to(device)
 
     return  word2index, weights
-
 
 # function to convert a list of words into the corresponding 
 # indices using the supplied dictionary
@@ -317,7 +324,7 @@ class SST:
 
 # comment about 
 class Extrinsic_Sentiment_Analysis:
-    def __init__(self, SST, input_embedding_dict, input_embedding_weights, reduce=True):
+    def __init__(self, SST, input_embedding_dict, input_embedding_weights):
         
         self.X_train = SST.X_train
         self.X_val = SST.X_val
@@ -325,11 +332,7 @@ class Extrinsic_Sentiment_Analysis:
         self.input_embedding_dict = input_embedding_dict
         self.input_embedding_weights = input_embedding_weights
         
-        if reduce:
-            self.embedding_dict, self.embedding_weights = reduce_preprocess_embedding(self.X_train, self.X_val, self.X_test, input_embedding_dict, input_embedding_weights)
-        else:
-            self.embedding_dict = input_embedding_dict
-            self.embedding_weights = input_embedding_weights
+        self.embedding_dict, self.embedding_weights = reduce_preprocess_embedding(self.X_train, self.X_val, self.X_test, input_embedding_dict, input_embedding_weights)
 
         SST.embed(self.embedding_dict)
         self.TrainData = SST.TrainData
