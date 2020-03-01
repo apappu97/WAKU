@@ -373,6 +373,6 @@ if 1==0:
     SST = SST()
     Experiment = Extrinsic_Sentiment_Analysis(SST, W2V_dict, W2V_weights, True)
     print(Experiment)
-    Experiment.train(epochs=1, rnn_layers=1)
+    Experiment.train(epochs=50, learning_rate=0.001, batch_size=512, hidden_size=300, rnn_layers=2, mlp_layer_widths=100)
     Experiment.test(print_accuracies=True)
     SST.reset()
