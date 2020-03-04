@@ -3,7 +3,6 @@ import gzip
 import zipfile
 from os import path
 import numpy as np
-from gensim.models import KeyedVectors
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
