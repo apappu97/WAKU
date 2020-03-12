@@ -356,7 +356,7 @@ class Extrinsic_Sentiment_Analysis:
         except:
             raise ValueError('Model not trained')
 
-        with open('../data/scores/{}/{}.txt'.format(file_path,'sentiment_analysis_' + str(datetime.now())), 'w') as out:
+        with open('{}/{}.txt'.format(file_path,'sentiment_analysis_' + str(datetime.now())), 'w') as out:
             out.write("Test accuracy on SST: {}".format(self.bestAccuracy["test set"]))
 
         print("Test accuracy: {} saved to {}".format(self.bestAccuracy["test set"], str(fname)))
