@@ -350,16 +350,17 @@ class Extrinsic_Sentiment_Analysis:
                                                                                 epochs=epochs, learning_rate=learning_rate, batch_size=batch_size, rnn_layers=rnn_layers, 
                                                                                 mlp_layer_widths=mlp_layer_widths)
 
-    def test(self, print_accuracies=True, save_test_acc=True, file_path=None):
+    def test(self, print_accuracies=True, save_test_acc=True, file_path=None, file_name=NAME):
         try:
             self.bestAccuracy = test_model(self.model, self.TestData, self.accuracy, self.valAccuracy, print_accuracies=True)
         except:
             raise ValueError('Model not trained')
 
-        with open('{}/{}.txt'.format(file_path,'sentiment_analysis_' + str(datetime.now())), 'w') as out:
+        with open('{}/{}.txt'.format(file_path,'sentiment_analysis_'  + str(NAME) + str(datetime.now())), 'w') as out:
             out.write("Test accuracy on SST: {}".format(self.bestAccuracy["test set"]))
 
-        print("Test accuracy: {} saved to {}".format(self.bestAccuracy["test set"], str(fname)))
+        if print_accuracies:
+            print("Test accuracy: {} saved to {}".format(self.bestAccuracy["test set"], str(fname)))
 
     def plot(self):
         try:

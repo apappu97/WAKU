@@ -1,4 +1,7 @@
 import numpy as np
+from datetime import datetime
+import re
+from os import path
 
 def inter_dist(W, b, k):
     assert W.shape[0] == k
@@ -36,7 +39,7 @@ def top_ten_set(embedding_weights):
 
     return set(top_list)
 
-def dist_ratio(embedding_weights, top_list, k, N):
+def dist_ratio(embedding_weights, top_list, k, N, print_result=True, save_acc=True, file_path=EXPERIMENT_FOLDER_NAME, file_name=NAME):
     D = embedding_weights.shape[1]
     half = embedding_weights.shape[0]//2
     print(D, half)
@@ -77,5 +80,11 @@ def dist_ratio(embedding_weights, top_list, k, N):
     results = {}
     results['mean'] = np.mean(scores)
     results['std'] = np.std(scores)
+    if print_result:
+        print("mean word intrusion: {}, std: {}".format(results['mean'], results['std']))
+
+    if save_acc:
+        with open('{}/{}.txt'.format(file_path,'sentiment_analysis_' + str(file_name) + str(datetime.now())), 'w') as out:
+            out.write("Test accuracy on SST: {}".format(self.bestAccuracy["test set"]))
 
     return results
