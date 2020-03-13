@@ -359,12 +359,9 @@ class Extrinsic_Sentiment_Analysis:
         with open('{}/{}.txt'.format(file_path,'sentiment_analysis_'  + str(NAME) + str(datetime.now())), 'w') as out:
             out.write("Test accuracy on SST: {}".format(self.bestAccuracy["test set"]))
 
-<<<<<<< HEAD
-        print("Test accuracy: {} saved to {}".format(self.bestAccuracy["test set"], str(file_path)))
-=======
         if print_accuracies:
-            print("Test accuracy: {} saved to {}".format(self.bestAccuracy["test set"], str(fname)))
->>>>>>> kush_sa
+            print("Test accuracy: {} saved to {}".format(self.bestAccuracy["test set"], str(file_path)))
+
 
     def plot(self):
         try:
