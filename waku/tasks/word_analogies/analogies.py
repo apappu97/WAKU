@@ -2,6 +2,11 @@
 # I added gross CUDA code and dynamic sizing of matrices during batching as to not exceed Colab GPU memory allocation 
 
 # IMPORTANT -- whether the model has embeddings only for lowercase. If so, lower should be True. If model has embeddings for uppercase (i.e. proper nouns), should be False.
+import os 
+import numpy as np 
+from collections import defaultdict 
+import io 
+import torch 
 
 def get_word_id(word, word2id, lower):
     """
