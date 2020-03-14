@@ -7,6 +7,7 @@ import numpy as np
 from collections import defaultdict 
 import io 
 import torch 
+import time 
 
 def get_word_id(word, word2id, lower):
     """
