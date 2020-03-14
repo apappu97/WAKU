@@ -39,7 +39,7 @@ def top_ten_set(embedding_weights):
 
     return set(top_list)
 
-def dist_ratio(embedding_weights, top_list, k, N, print_result=True, save_acc=True, file_path=EXPERIMENT_FOLDER_NAME, file_name=NAME):
+def dist_ratio(embedding_weights, top_list, k, N, print_result=True, save_acc=True, file_path=None, file_name=None):
     D = embedding_weights.shape[1]
     half = embedding_weights.shape[0]//2
     print(D, half)
