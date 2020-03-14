@@ -84,7 +84,7 @@ def dist_ratio(embedding_weights, top_list, k, N, print_result=True, save_acc=Tr
         print("mean word intrusion: {}, std: {}".format(results['mean'], results['std']))
 
     if save_acc:
-        with open('{}/{}.txt'.format(file_path,'sentiment_analysis_' + str(file_name) + str(datetime.now())), 'w') as out:
-            out.write("Test accuracy on SST: {}".format(self.bestAccuracy["test set"]))
+        with open('{}/{}.txt'.format(file_path,'word_intrusion_' + str(file_name) + str(datetime.now())), 'w') as out:
+            out.write("Mean word intrusion: {}, std: {}".format(results['mean'], results['std']))
 
     return results
