@@ -32,18 +32,13 @@ def top_ten_set(embedding_weights):
     for i in range(D):
         indices = np.argsort(embedding_weights[:,i])[::-1]
         top_list |= set(indices[:tenth])
-        if i%50==0:
-            print(len(top_list))
-            print('dim {} complete'.format(i))
-    print(len(set(top_list)))
 
     return set(top_list)
 
 def dist_ratio(embedding_weights, top_list, k, N, print_result=True, save_acc=True, file_path=None):
     D = embedding_weights.shape[1]
     half = embedding_weights.shape[0]//2
-    print(D, half)
-    
+
     scores = np.zeros(N)
     
     for run in range(N):
@@ -64,14 +59,9 @@ def dist_ratio(embedding_weights, top_list, k, N, print_result=True, save_acc=Tr
 
             # calculate intra + inter dist
             interDist = inter_dist(W, b, k)
-            # print(interDist)
             intraDist = intra_dist(W, k)
-            # print(intraDist)
             
             dist_ratio  += interDist/intraDist
-            # print(intraDist/interDist)
-            if i%50==0:
-                print('dim {} complete'.format(i))
         
         # store dist_ratio
         scores[run] = dist_ratio/D
@@ -80,6 +70,7 @@ def dist_ratio(embedding_weights, top_list, k, N, print_result=True, save_acc=Tr
     results = {}
     results['mean'] = np.mean(scores)
     results['std'] = np.std(scores)
+
     if print_result:
         print("mean word intrusion: {}, std: {}".format(results['mean'], results['std']))
 
