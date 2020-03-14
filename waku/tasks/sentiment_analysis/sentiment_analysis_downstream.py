@@ -350,7 +350,7 @@ class Extrinsic_Sentiment_Analysis:
                                                                                 epochs=epochs, learning_rate=learning_rate, batch_size=batch_size, rnn_layers=rnn_layers, 
                                                                                 mlp_layer_widths=mlp_layer_widths)
 
-    def test(self, print_accuracies=True, save_test_acc=True, file_path=None, file_name=NAME):
+    def test(self, print_accuracies=True, save_test_acc=True, file_path=None, file_name='vanilla_300'):
         try:
             self.bestAccuracy = test_model(self.model, self.TestData, self.accuracy, self.valAccuracy, print_accuracies=True)
         except:
