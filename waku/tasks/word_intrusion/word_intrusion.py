@@ -65,7 +65,6 @@ def dist_ratio(embedding_weights, top_list, k, N, print_result=True, save_acc=Tr
         
         # store dist_ratio
         scores[run] = dist_ratio/D
-        print(scores[run])
     
     results = {}
     results['mean'] = np.mean(scores)
