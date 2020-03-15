@@ -22,8 +22,8 @@ def loadSimilarlityData(sim_pairs_filepath):
 
 def get_embedding_word_vector_dict(dict_pickle_path, embedding_npz_path):
 	"""loads ditionary of word to embedding vector """
-    emb_dict = pickle.load(open(dict_pickle_path, 'rb')) 
-	emb_weight = np.load(embedding_npz_path)['a']
+    emb_dict = pickle.load(open(dict_pickle_path, 'rb'))
+    emb_weight = np.load(embedding_npz_path)['a']
 
 	word_vec_dict = {}
 
