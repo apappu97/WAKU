@@ -23,7 +23,7 @@ def get_word_id(word, word2id, lower):
         word_id = word2id.get(word.title())
     return word_id
 
-def get_wordanalogy_scores(dirpath, word2id, embeddings, lower):
+def get_wordanalogy_scores(dirpath, word2id, embeddings, lower, verbose = False):
     """
     Return (english) word analogy score
     """
@@ -31,7 +31,13 @@ def get_wordanalogy_scores(dirpath, word2id, embeddings, lower):
         return None
 
     # normalize word embeddings
+    row_sums = np.sqrt((embeddings ** 2).sum(1))[:, None]
+    rows_with_zerosum = np.argwhere(row_sums == 0)
     embeddings = embeddings / np.sqrt((embeddings ** 2).sum(1))[:, None]
+
+    if len(rows_with_zerosum) > 0: # set rows that have been turned to NaN back to 0
+        embeddings[rows_with_zerosum[:,0],:] = 0
+        print('Fixed NaNs from zero division')
 
     # scores by category
     scores = defaultdict(dict)
@@ -81,14 +87,15 @@ def get_wordanalogy_scores(dirpath, word2id, embeddings, lower):
 
                 queries[category].append(query)
             total_examples += 1
-    
-    print("Done scanning, threw {} examples out of {} total = {} % discarded".format(num_examples_thrown, total_examples, float(num_examples_thrown)/total_examples * 100))
+    if verbose:
+        print("Done scanning, threw {} examples out of {} total = {} % discarded".format(num_examples_thrown, total_examples, float(num_examples_thrown)/total_examples * 100))
     
     # Compute score for each category
     total_cats = len(queries)
     curr_cat = 0
     ROW_LIMIT = 500
-
+    
+    overall_start_time = time.time()
     with torch.no_grad(): # make sure to not store computational graph info
       for cat in queries:
 
@@ -123,7 +130,8 @@ def get_wordanalogy_scores(dirpath, word2id, embeddings, lower):
             scores[key]['n_correct'] = num_correct
 
             curr_cat +=1 
-            print('finished batch {} out of {}, took {} seconds'.format(curr_cat, total_cats, time.time() - start_time))
+            if verbose:
+                print('finished batch {} out of {}, took {} seconds'.format(curr_cat, total_cats, time.time() - start_time))
             
             # clean up memory
             del values 
@@ -133,10 +141,10 @@ def get_wordanalogy_scores(dirpath, word2id, embeddings, lower):
             del correct_indices 
             torch.cuda.empty_cache()
             # print("Current CUDA snapshot after del and empty cache at end of loop", torch.cuda.memory_allocated())
-
+    
+    overall_total_time = time.time() - overall_start_time
     # compute and log accuracies
-
-    print('computing total accuracy')
+    
     total_correct = 0
     total_found = 0
 
@@ -144,8 +152,9 @@ def get_wordanalogy_scores(dirpath, word2id, embeddings, lower):
         v = scores[k]
         total_correct += v['n_correct']
         total_found += v.get('n_found', 0)
-
-    print("total correct: {}, total found: {}".format(total_correct, total_found))
+    if verbose:
+        print("total correct: {}, total found: {}".format(total_correct, total_found))
     total_accuracy = float(total_correct)/total_found
-    print("total acc: {}".format(total_accuracy))
-    return scores, total_correct, total_found, total_accuracy
+    if verbose:
+        print("total acc: {}".format(total_accuracy))
+    return scores, total_correct, total_found, total_accuracy, overall_total_time
