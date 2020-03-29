@@ -1,8 +1,22 @@
 import torch
 
-# format the data, extracting the sentence as
-# well as the sentiment of the entire sentence
 def ReadTextFile(filepath) :
+    """
+    Extract raw sentences and sentiment labels from data
+
+    Parameters:
+    ----------- 
+    filepath : `str`
+        The path of data file
+
+    Returns:
+    --------
+    y : `list` of `int`
+        List of sentiment labels
+    X : `list` of `list` of `str
+        List of sentences, each itself a list of words
+
+    """
     y = list()
     X = list()
     with open(filepath) as r :
@@ -18,6 +32,26 @@ def ReadTextFile(filepath) :
 def reduce_preprocess_embedding(x_train, x_val, x_test, embedding_dict, embedding_weights):
     """
     Removes vocabulary and corresponding embeddings of unused words which are reintroduced later at test time
+
+    Parameters:
+    ----------- 
+    x_train : `list`
+        List of train sentences
+    x_val : `list`
+        List of validation sentences
+    x_test : `list`
+        List of test sentences
+    embeddings_dict : `dict`
+        Dict mapping words to int, which indexes row of embeddings matrix  
+    embeddings_weights : `numpy.ndarray``
+        (len(vocab), 300) Matrix of word embeddings  
+
+    Returns:
+    --------
+    word2index : `dict`
+        Reduced embedding dictionary mapping words to int
+    weights : `numpy.ndarray``
+        (len(smaller_vocab), 300) Matrix of word embeddings  
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     n_dim = embedding_weights.shape[1]
@@ -32,11 +66,8 @@ def reduce_preprocess_embedding(x_train, x_val, x_test, embedding_dict, embeddin
     for i in range(len(x_test)):
         dataVocab |= set(x_test[i])       
         
-#     print("size of vocab in dataset:", len(dataVocab))
-#     print("size of vocab in word2vec:", len(w2vVocab))
     # use the union between the data vocab and the word2vec vocab
     dataInW2V = dataVocab & w2vVocab
-#     print("size of vocab union between data and word2vec", len(dataInW2V))
 
     # for every word appearing in both datasets, copy the embedding into a new matrix
     weights = torch.empty((len(dataInW2V)+2, n_dim))
@@ -51,14 +82,26 @@ def reduce_preprocess_embedding(x_train, x_val, x_test, embedding_dict, embeddin
     word2index["UNK"] = 1
     weights[1, :] = torch.from_numpy(embedding_weights[embedding_dict["UNK"]])
 
-#     print("tokens in new embedding matrix", weights.shape[0])
     weights = weights.to(device)
 
     return  word2index, weights
 
-# function to convert a list of words into the corresponding 
-# indices using the supplied dictionary
 def sentence2index(indexDict,sentence) :
+    """
+    Convert a list of words into the corresponding indices using the supplied dictionary
+
+    Parameters:
+    -----------
+    indexDict : `dict`
+        Dict mapping words to int, which indices row of embeddings matrix
+    sentence : `list` of `str`
+        List of words
+
+    Returns:
+    --------
+    torch.tensor(idx, dtype=torch.long) : `torch.Tensor`
+        Tensor of mapped words to indices
+    """
     idx = list()
     for word in sentence :
         try :
@@ -67,8 +110,23 @@ def sentence2index(indexDict,sentence) :
             idx.append(indexDict["UNK"])
     return torch.tensor(idx, dtype=torch.long)
 
-# function to combine data samples into a batch that the model can recieve
 def pad_collate(batch):
+    """
+    Combines data samples into a batch that the model can receive
+
+    Parameters:
+    -----------
+    batch : `torch.Tensor`
+        DataLoader item with embedded sentences and labels
+
+    Returns:
+    --------
+    (text_pad, phrase_lengths) : `tuple` of (`torch.Tensor`, `int`)
+        Padded sequence of embedded words, length of sentence
+
+    labels : `int`
+        Class label of sentence 
+    """
     labels = torch.tensor([entry[0] for entry in batch])
     text = [entry[1] for entry in batch]
     # calculate the true lengths of each sequence
