@@ -2,10 +2,26 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-"""## Creating + training the model"""
 class LSTMLearner(nn.Module):
+    """
+    LSTM model for sentiment analysis
+    """
     def __init__(self, embeddingDict, embeddingWeights, hidden_size=300, rnn_layers=1,
                  mlp_layer_widths=100):
+        """
+        Parameters:
+        ----------
+        embeddings_dict : `dict`
+            Dict mapping words to int, which indexes row of weight matrix  
+        embeddings_weights : `numpy.ndarray``
+            (len(vocab), 300) Matrix of word embeddings 
+        hidden_size : `int`
+            Number of features in hidden state of LSTM
+        rnn_layers : `int`
+            Number of recurrent layers
+        mlp_layer_widths : `int`
+            Size of fully connected layer 
+        """
         super(LSTMLearner, self).__init__()
         #use the pretrained embeddings
         self.n_dim = embeddingWeights.shape[1]
@@ -20,8 +36,22 @@ class LSTMLearner(nn.Module):
         self.fc1 = nn.Linear(hidden_size, mlp_layer_widths)
         self.fc2 = nn.Linear(mlp_layer_widths, 5)
 
-    #pass data through all layers defined
     def forward(self, x_padded, phrase_lengths):
+        """
+        Forward pass through network.
+        
+        Parameters:
+        ----------        
+        x_padded : `torch.Tensor`
+            Batch of embedded input sentences
+        phrase_lengths : `torch.Tensor`
+            Length of each setence in batch
+
+        Returns:
+        --------
+        loss : `torch.Tensor`
+            The cross-entropy loss of the forward pass.
+        """
         x_embedded = self.embedding(x_padded)
         x_packed = torch.nn.utils.rnn.pack_padded_sequence(x_embedded,
                                                            phrase_lengths,
