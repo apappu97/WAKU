@@ -15,6 +15,7 @@ from waku.sentiment_analysis.helpers import reduce_preprocess_embedding, pad_col
 def save_checkpoint(state_dict, filename='checkpoint.pth.tar'):
     """
     Save checkpoint of model used in early stopping 
+    
     Parameters:
     -----------
     state_dict : `dict`
@@ -58,16 +59,12 @@ def trainModel(embeddings_dict, embeddings_weights, trainData, valData, epochs=2
     --------
     model : `torch.Module`
         Trained LSTMLearner model
-
     losses : `list` of `float`
         The total training loss in each epoch.
-
     valLosses : `list` of `float`
         The total validation loss in each epoch.
-
     accuracy : `list` of `float`
         The training accuracy in each epoch.
-
     valAccuracy : `list` of `float`
         The validation accuracy in each epoch.
     """
@@ -150,13 +147,10 @@ def plot_model(accuracy, valAccuracy, losses, valLosses):
     -----------
     losses : `list` of `float`
         The total training loss in each epoch.
-
     valLosses : `list` of `float`
         The total validation loss in each epoch.
-
     accuracy : `list` of `float`
         The training accuracy in each epoch.
-
     valAccuracy : `list` of `float`
         The validation accuracy in each epoch.
     """
@@ -248,7 +242,7 @@ class Extrinsic_Sentiment_Analysis:
             Data for experiment
         input_embedding_dict : `dict`
             Dict mapping words to int, which indexes row of weight matrix  
-        input_embedding_weights : `numpy.ndarray``
+        input_embedding_weights : `numpy.ndarray`
             (len(vocab), 300) Matrix of word embeddings
         """
         self.X_train = SST.X_train
@@ -346,7 +340,7 @@ def evaluate(embedding_weights, data_filepath, embedding_dict, checkpoint_filepa
 
     Parameters:
     -----------
-    embeddings_weights : `numpy.ndarray``
+    embeddings_weights : `numpy.ndarray`
         (len(vocab), 300) Matrix of word embeddings 
     data_filepath : `str`
         Path for raw Stanford Sentiment Treeback data

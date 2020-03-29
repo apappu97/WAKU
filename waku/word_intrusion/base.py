@@ -2,13 +2,21 @@ import numpy as np
 
 def inter_dist(W, b, k):
     """
-    
+    Calculates average distance between top k words in dimension and intruder.
+
     Parameters:
     -----------
-    
+    W : `numpy.ndarray`
+        (k, 300) embeddings of k words
+    b : `numpy.ndarray`
+        (1, 300) embedding of intruder b
+    k : `int`
+        Number of words in calculation
+
     Returns:
     --------
-    
+    dist/k : `float`
+        Average distance
     """
     dist = 0
     for i in range(k):
@@ -17,13 +25,18 @@ def inter_dist(W, b, k):
 
 def intra_dist(W, k):
     """
-    
+    Calculates average distance between top k words in a dimension
+
     Parameters:
     -----------
-    
+    W : `numpy.ndarray`
+        (k, 300) embeddings of k words
+    k : `int`
+        Number of words in calculation
     Returns:
     --------
-    
+    dist/(k*(k-1) : `float`
+        Average distance
     """    
     dist = 0
     for i in range(k):
@@ -34,7 +47,8 @@ def intra_dist(W, k):
 
 def top_ten_set(embedding):
     """
-    
+    Gives indices of words that appear in the top 10% of a dimension.
+
     Parameters:
     -----------
     embedding : `numpy.ndarray`
@@ -42,7 +56,8 @@ def top_ten_set(embedding):
     
     Returns:
     --------
-    
+    top_list : `list` of `int`
+        List of indices
     """    
     D = embedding.shape[1]
     tenth = embedding.shape[0]//10
@@ -56,17 +71,18 @@ def top_ten_set(embedding):
 
 def dist_ratio(embedding, top_list, k, N, acc_filepath=None, verbose=True):
     """
-    
+    Calculates the Intrusion score, namely interDist/intraDist.
+
     Parameters:
     -----------
     embedding : `numpy.ndarray`
         The embedding matrix.
-    top_list : `list`
-        pass
+    top_list : `list` of `int`
+        List of indices for words that appear in the top 10% of some dimension.
     k : `int`
-        pass
+        Number of words to compare intruder to.
     N : `int`
-        pass
+        Number of runs to average over
     acc_filepath : `str`
         The output filepath for saving the accuracies.        
     verbose : `Boolean`
@@ -74,7 +90,8 @@ def dist_ratio(embedding, top_list, k, N, acc_filepath=None, verbose=True):
         
     Returns:
     --------
-    
+    results : `dict`
+        Dictionary of mean and std of intrusion scores
     """    
     D = embedding.shape[1]
     half = embedding.shape[0]//2
@@ -121,15 +138,16 @@ def dist_ratio(embedding, top_list, k, N, acc_filepath=None, verbose=True):
 
 def evaluate(embedding, k, N, acc_filepath=None, verbose=False):
     """
-    
+    Runs word intrusion experiment.
+
     Parameters:
     -----------
     embedding : `numpy.ndarray`
         The embedding matrix.
     k : `int`
-        pass
+        Number of words to compare intruder to.
     N : `int`
-        pass
+        Number of runs to average over
     acc_filepath : `str`
         The output filepath for saving the accuracies.        
     verbose : `Boolean`
@@ -137,8 +155,8 @@ def evaluate(embedding, k, N, acc_filepath=None, verbose=False):
         
     Returns:
     --------
-    results : ``
-        pass
+    result['mean'] : `float`
+        Mean of N runs of intrusion calculations
     """    
     top_ten = top_ten_set(embedding)
     results = dist_ratio(embedding, 
