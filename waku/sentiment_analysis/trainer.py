@@ -12,19 +12,6 @@ from waku.sentiment_analysis.dataloader import SST
 from waku.sentiment_analysis.helpers import reduce_preprocess_embedding, pad_collate
 
 
-def save_checkpoint(state_dict, filename='checkpoint.pth.tar'):
-    """
-    Save checkpoint of model used in early stopping 
-    
-    Parameters:
-    -----------
-    state_dict : `dict`
-        PyTorch dictionary mapping model layer to tensor
-    filename : `str`
-        The path to save the checkpoints.
-    """
-    torch.save(state_dict, filename)
-
 def trainModel(embeddings_dict, embeddings_weights, trainData, valData, epochs=25, learning_rate=0.001, 
                batch_size=512, hidden_size=300, rnn_layers=1, mlp_layer_widths=100, checkpoint_filepath='checkpoint.pth.tar'):
     """
@@ -130,14 +117,14 @@ def trainModel(embeddings_dict, embeddings_weights, trainData, valData, epochs=2
 
         #if validation improved, save new best model
         if valAccuracy[-1] == max(valAccuracy):
-            save_checkpoint(model.state_dict(), checkpoint_filepath)
+            best_model = deepcopy(model)
         epoch += 1
 
     #clean up
     model = model.to(torch.device("cpu"))
     del text_pad, phrase_lengths, labels, out, _, pred, weightsCopy
 
-    return model, losses, valLosses, accuracy, valAccuracy
+    return best_model, losses, valLosses, accuracy, valAccuracy
 
 def plot_model(accuracy, valAccuracy, losses, valLosses):
     """
@@ -207,7 +194,7 @@ def test_model(model, TestData, accuracy, valAccuracy, print_accuracies=False, c
         
         # load trained model
         bestModel = copy.deepcopy(model)
-        bestModel.load_state_dict(torch.load(checkpoint_filepath, map_location=torch.device("cpu")))
+        bestModel.load_state_dict(model.state_dict())
 
         # set model to evaluation mode so dropout works as intended
         bestModel.eval()
