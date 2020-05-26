@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 class LSTMLearner(nn.Module):
     """
-    LSTM model for sentiment analysis
+    LSTM model for sentiment analysis with LSTM recurrent unit and two fully connected layers
     """
     def __init__(self, embeddingDict, embeddingWeights, hidden_size=300, rnn_layers=1,
                  mlp_layer_widths=100):
