@@ -1,6 +1,6 @@
 Code for our UCL NLP Final Project, using Hoyer-Square regularisation for learning sparse embeddings.
 
-William Lamb, Kush Madlani, Udeepa Meepegama, Aneesh Pappu
+George Lamb, Kush Madlani, Udeepa Meepegama, Aneesh Pappu
 
 ## Directory Structure
 ### Code 
